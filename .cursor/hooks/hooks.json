@@ -1,0 +1,21 @@
+{
+  "hooks": [
+    {
+      "name": "after-schema-change",
+      "description": "Remind about Prisma migration and type generation after schema changes",
+      "event": "file_saved",
+      "filter": {
+        "glob": "apps/backend/prisma/schema.prisma"
+      },
+      "command": "echo 'Schema changed! Run: cd apps/backend && npx prisma migrate dev --name <description> && npx prisma generate'",
+      "message": "Prisma schema was modified. Remember to:\n1. Run `npx prisma migrate dev --name <description>` to create a migration\n2. Run `npx prisma generate` to update the client\n3. Update corresponding DTOs and service methods\n4. Verify tests still pass"
+    },
+    {
+      "name": "check-secrets-before-commit",
+      "description": "Check for hardcoded secrets before committing",
+      "event": "pre_commit",
+      "command": "git diff --cached --name-only | ForEach-Object { Select-String -Path $_ -Pattern '(password|secret|api_key|token)\\s*[:=]\\s*[\"''][^\"'']+[\"'']' -CaseSensitive:$false } 2>$null; if ($LASTEXITCODE -eq 0) { Write-Error 'Potential hardcoded secrets detected!'; exit 1 }",
+      "message": "Checking staged files for potential hardcoded secrets (passwords, API keys, tokens). Use environment variables instead."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+---
+description: Error handling patterns for backend and frontend
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+# Error Handling
+
+## Backend (NestJS)
+
+- Use `GlobalExceptionFilter` for centralized error handling.
+- Throw NestJS built-in exceptions: `BadRequestException`, `NotFoundException`, `InternalServerErrorException`.
+- All exceptions are caught, logged (structured JSON), and return consistent response format:
+
+```json
+{
+  "statusCode": 400,
+  "timestamp": "...",
+  "path": "/api/...",
+  "message": "..."
+}
+```
+
+- For domain errors: use specific HTTP codes (400, 404, 409, 422).
+- For unexpected errors: let GlobalExceptionFilter return 500.
+- Every error MUST be logged with: path, method, statusCode, error message, stack trace.
+- `system_error` scenarios must also be captured in Sentry.
+
+## Frontend (Next.js)
+
+- API errors are thrown from `lib/api.ts` with descriptive messages.
+- Use `sonner` toast for user-facing error messages.
+- Mutation errors handled via `onError` callback in `useMutation`.
+- Query errors shown inline or via error boundary.
+- Never show raw error objects to users.

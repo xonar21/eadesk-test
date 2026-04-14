@@ -1,0 +1,41 @@
+---
+description: Observability conventions — metrics naming, log format, Sentry usage
+globs:
+  - "apps/backend/**/*.ts"
+alwaysApply: false
+---
+
+# Observability Conventions
+
+## Metrics (Prometheus)
+
+- Use `prom-client` library via `MetricsService`.
+- Metric naming: `snake_case` with prefix by domain (e.g., `scenario_runs_total`).
+- Always add labels: `type`, `status` for counters.
+- Histogram buckets: `[0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10]` seconds.
+- Every new endpoint MUST have `http_requests_total` tracked via `HttpMetricsMiddleware`.
+- Every domain operation MUST have a counter and duration histogram.
+
+## Required Metrics
+
+| Metric | Type | Labels |
+|--------|------|--------|
+| `scenario_runs_total` | Counter | `type`, `status` |
+| `scenario_run_duration_seconds` | Histogram | `type` |
+| `http_requests_total` | Counter | `method`, `path`, `status_code` |
+
+## Logging (Loki)
+
+- All logs MUST be structured JSON: `{ timestamp, level, message, context, ... }`.
+- Use NestJS `Logger` — it produces structured output.
+- Every scenario run MUST produce at least 1 log with fields:
+  - `scenarioType`, `scenarioId`, `duration`, `error` (if any).
+- Log levels: `info` for success, `warn` for slow/validation, `error` for failures.
+
+## Sentry
+
+- Sentry SDK initialized in `main.ts` via `SENTRY_DSN` env variable.
+- `system_error` scenario MUST capture exception in Sentry.
+- `validation_error` MAY create a breadcrumb.
+- Never send PII or secrets to Sentry.
+- DSN is configured via environment variable, never hardcoded.

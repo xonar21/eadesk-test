@@ -1,0 +1,44 @@
+---
+description: Prisma ORM patterns and constraints
+globs:
+  - "apps/backend/**/*.ts"
+  - "prisma/**"
+alwaysApply: false
+---
+
+# Prisma Patterns
+
+## Schema Conventions
+
+- Models use `PascalCase` names (e.g., `ScenarioRun`).
+- Table names use `snake_case` via `@@map()`.
+- Column names use `camelCase` in code, `snake_case` in DB via `@map()`.
+- IDs use `cuid()` by default: `@id @default(cuid())`.
+- Timestamps: `createdAt DateTime @default(now()) @map("created_at")`.
+- Optional JSON fields use `Json?` type.
+
+## Forbidden
+
+- Do NOT use raw SQL (`$queryRaw`, `$executeRaw`) unless absolutely necessary.
+- Do NOT use other ORMs (TypeORM, Sequelize, Drizzle).
+- Do NOT modify generated Prisma client files.
+
+## Service Pattern
+
+- Always use `PrismaService` (extends `PrismaClient`) from `src/prisma/`.
+- `PrismaModule` is `@Global()` — no need to import in every module.
+- Use repository pattern: domain services call Prisma, controllers call services.
+
+## Migrations
+
+- After changing schema: run `npx prisma migrate dev --name <description>`.
+- Always commit migration files.
+- In Docker: migrations run automatically via `prisma migrate deploy`.
+
+## After Schema Changes
+
+1. Update `prisma/schema.prisma`.
+2. Run `npx prisma migrate dev --name <change_description>`.
+3. Run `npx prisma generate`.
+4. Update corresponding DTOs and service methods.
+5. Verify existing tests pass.

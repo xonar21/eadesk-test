@@ -1,0 +1,35 @@
+---
+description: Stack constraints — allowed and forbidden libraries
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Stack Constraints
+
+## Mandatory Stack
+
+| Layer        | Required Technologies                                        |
+|-------------|--------------------------------------------------------------|
+| Frontend    | Next.js (App Router), shadcn/ui, Tailwind CSS, TanStack Query, React Hook Form |
+| Backend     | NestJS, TypeScript strict                                    |
+| Database    | PostgreSQL 16 via Prisma                                     |
+| Observability | Sentry, Prometheus, Grafana, Loki                          |
+| Infra       | Docker Compose                                               |
+
+## Forbidden
+
+- Do NOT use Redux, Zustand, Jotai, or MobX. Use TanStack Query for server state.
+- Do NOT use SWR. Only TanStack Query for data fetching.
+- Do NOT use Formik or other form libraries. Only React Hook Form.
+- Do NOT use MUI, Ant Design, Chakra UI. Only shadcn/ui + Tailwind.
+- Do NOT use TypeORM, Sequelize, or Drizzle. Only Prisma.
+- Do NOT use Express directly. Use NestJS platform-express.
+- Do NOT use raw SQL unless absolutely required (use Prisma query builder).
+
+## When adding new dependencies
+
+1. Check if the functionality already exists in the mandatory stack.
+2. If a new library is needed, justify why the mandatory stack cannot cover it.
+3. Always prefer smaller, focused packages over large frameworks.

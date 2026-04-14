@@ -1,0 +1,48 @@
+---
+description: Frontend patterns — TanStack Query, RHF, shadcn/ui, Tailwind
+globs:
+  - "apps/frontend/**/*.ts"
+  - "apps/frontend/**/*.tsx"
+alwaysApply: false
+---
+
+# Frontend Patterns
+
+## Data Fetching — TanStack Query
+
+- All server state managed via `@tanstack/react-query`.
+- Use `useQuery` for reads, `useMutation` for writes.
+- After mutation: call `queryClient.invalidateQueries()` to refresh data.
+- Auto-refresh where needed: `refetchInterval: 5000`.
+- API calls live in `lib/api.ts`, not in components.
+
+## Forms — React Hook Form
+
+- All forms use `react-hook-form` with `useForm()`.
+- Use `register()` for inputs, `handleSubmit()` for submission.
+- Validation via RHF built-in rules or schema validation.
+- Show loading state during submission (`mutation.isPending`).
+
+## UI Components — shadcn/ui
+
+- Import components from `@/components/ui/`.
+- Use `Button`, `Card`, `Input`, `Select`, `Badge`, `Sonner` (toast).
+- Follow shadcn/ui patterns: composition over configuration.
+- Customize via Tailwind classes, not custom CSS.
+
+## Styling — Tailwind CSS
+
+- Layout with Tailwind utility classes.
+- Responsive: `sm:`, `md:`, `lg:` breakpoints.
+- Dark mode support via `dark:` variant.
+- No custom CSS files unless absolutely necessary.
+
+## File Structure
+
+```
+apps/frontend/
+  app/          — Next.js App Router pages and layouts
+  components/   — Feature components
+  components/ui/ — shadcn/ui base components
+  lib/          — Utilities and API client
+```
